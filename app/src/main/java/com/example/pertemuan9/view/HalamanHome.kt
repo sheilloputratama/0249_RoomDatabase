@@ -1,9 +1,8 @@
 package com.example.pertemuan9.view
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,24 +35,24 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.pertemuan9.R
 import com.example.pertemuan9.room.Siswa
-import com.example.pertemuan9.uicontroller.DestinasiEntry
-import com.example.pertemuan9.uicontroller.DestinasiHome
-import com.example.pertemuan9.uicontroller.HalamanTopAppBar
+import com.example.pertemuan9.view.route.DestinasiHome
 import com.example.pertemuan9.viewmodel.HomeViewModel
-import com.example.pertemuan9.viewmodel.PenyediaViewModel
+import com.example.pertemuan9.viewmodel.provider.PenyediaViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: HomeViewModel = viewModel(factory = PenyediaViewModel.Factory)
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            HalamanTopAppBar(
+            SiswaTopAppBar(
                 title = stringResource(DestinasiHome.titleRes),
                 canNavigateBack = false,
                 scrollBehavior = scrollBehavior
@@ -72,9 +71,10 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        val homeUiState by viewModel.homeUiState.collectAsState()
-        HomeBody(
-            itemSiswa = homeUiState.listSiswa,
+        val uiStateSiswa by viewModel.homeUiState.collectAsState()
+        BodyHome(
+            itemSiswa = uiStateSiswa.listSiswa,
+            onSiswaClick = navigateToItemUpdate,
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -83,8 +83,9 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeBody(
+fun BodyHome(
     itemSiswa: List<Siswa>,
+    onSiswaClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -95,11 +96,13 @@ fun HomeBody(
             Text(
                 text = stringResource(R.string.deskripsi_no_item),
                 textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
             )
         } else {
             ListSiswa(
                 itemSiswa = itemSiswa,
+                onSiswaClick = { onSiswaClick(it.id) },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
         }
@@ -109,23 +112,25 @@ fun HomeBody(
 @Composable
 fun ListSiswa(
     itemSiswa: List<Siswa>,
+    onSiswaClick: (Siswa) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(all = 8.dp)
+        modifier = modifier
     ) {
-        items(items = itemSiswa, key = { it.id }) { siswa ->
-            Siswa(
-                siswa = siswa,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small))
+        items(itemSiswa, key = { it.id }) { person ->
+            DataSiswa(
+                siswa = person,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+                    .clickable { onSiswaClick(person) }
             )
         }
     }
 }
 
 @Composable
-fun Siswa(
+fun DataSiswa(
     siswa: Siswa,
     modifier: Modifier = Modifier
 ) {
@@ -142,7 +147,7 @@ fun Siswa(
             ) {
                 Text(
                     text = siswa.nama,
-                    style = MaterialTheme.typography.titleLarge
+                    style = MaterialTheme.typography.titleLarge,
                 )
                 Spacer(Modifier.weight(1f))
                 Icon(

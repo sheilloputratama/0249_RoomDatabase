@@ -50,6 +50,8 @@ data class DetailsSiswa(
     val telpon: String = ""
 )
 
+typealias DetailSiswa = DetailsSiswa
+
 /* Fungsi untuk mengkonversi data input ke data dalam tabel sesuai jenis datanya*/
 fun DetailsSiswa.toSiswa(): Siswa = Siswa(
     id = id,
@@ -64,6 +66,13 @@ fun Siswa.toUiStateSiswa(isEntryValid: Boolean = false): UIStateSiswa = UIStateS
 )
 
 fun Siswa.toDetailsSiswa(): DetailsSiswa = DetailsSiswa(
+    id = id,
+    nama = nama,
+    alamat = alamat,
+    telpon = telpon
+)
+
+fun Siswa.toDetailSiswa(): DetailSiswa = DetailsSiswa(
     id = id,
     nama = nama,
     alamat = alamat,

@@ -28,13 +28,12 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pertemuan9.uicontroller.HalamanTopAppBar
 import com.example.pertemuan9.viewmodel.DetailsSiswa
 import com.example.pertemuan9.viewmodel.EntryViewModel
 import com.example.pertemuan9.viewmodel.UIStateSiswa
 import com.example.pertemuan9.R
-import com.example.pertemuan9.uicontroller.DestinasiEntry
-import com.example.pertemuan9.viewmodel.PenyediaViewModel
+import com.example.pertemuan9.view.route.DestinasiEntry
+import com.example.pertemuan9.viewmodel.provider.PenyediaViewModel
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,7 +48,7 @@ fun EntrySiswaScreen(
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            HalamanTopAppBar(
+            SiswaTopAppBar(
                 title = stringResource(DestinasiEntry.titleRes),
                 canNavigateBack = true,
                 navigateUp = navigateBack,
@@ -134,6 +133,15 @@ fun FormInputSiswa(
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = true
+        )
+        OutlinedTextField(
+            value = detailsSiswa.telpon,
+            onValueChange = { onValueChange(detailsSiswa.copy(telpon = it)) },
+            label = { Text(stringResource(R.string.telpon)) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
         )
     }
 }
